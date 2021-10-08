@@ -1,5 +1,8 @@
 class DropBoxController {
     constructor() {
+
+      this.onselectionchange = new Event('selectionchange');
+
       this.btnSendFileEl = document.querySelector("#btn-send-file");
       this.inputFilesEl = document.querySelector("#files");
       this.snackModalEl = document.querySelector("#react-snackbar-root");
@@ -7,7 +10,11 @@ class DropBoxController {
       this.nameFileEl = this.snackModalEl.querySelector('.filename');
       this.timeleftEl = this.snackModalEl.querySelector('.timeleft');
       this.listFilesEl = document.querySelector('#list-of-files-and-directories');
-  
+      
+      this.btnNewFolder = document.querySelector('#btn-new-folder');
+      this.btnRename = document.querySelector('#btn-rename');
+      this.btnDelete = document.querySelector('#btn-delete');
+
       this.connectFirebase();
       this.initEvents();
       this.readFiles();
@@ -26,6 +33,13 @@ class DropBoxController {
     }
   
     initEvents() {
+
+      this.listFilesEl.addEventListener('selectionchange', e => {
+
+        
+
+      });
+
       this.btnSendFileEl.addEventListener("click", (event) => {
         this.inputFilesEl.click();
       });
@@ -316,10 +330,11 @@ class DropBoxController {
         ${this.getFileIconView(file)}
         <div class="name text-center">${file.name}s</div>
       `
+
+      this.initEventsLi(li);
   
       return li;
     }
-  
   
     readFiles(){
       this.getFirebaseRef().on('value', snapshot => {
@@ -327,20 +342,69 @@ class DropBoxController {
 
         snapshot.forEach(snapshotItem => {
   
-  
           let key = snapshotItem.key;
           let data = snapshotItem.val();
   
-  
           this.listFilesEl.appendChild(this.getFileView(data, key));
-  
-  
-          console.log(key, data);
-        });
+          });
   
   
       });
-  
     }
+
+    initEventsLi(li){
+
+      li.addEventListener('click', e=> {
+
+        this.listFilesEl.dispatchEvent(this.onselectionchange)
+
+        if(e.shiftKey) {
+
+          let firstLi = this.listFilesEl.querySelector('.selected');
+          
+          if (firstLi) {
+            let indexStart;
+            let indexEnd;
+            let lis = li.parentElement.childNodes;
+
+            lis.forEach((el, index) =>{
+
+              if(firstLi === el) indexStart = index;
+              if(li === el) indexEnd = index;
+
+            });
+
+            let index = [indexStart, indexEnd].sort();
+
+            lis.forEach((el, i) =>{
+
+              if (i >= index[0] && i <= index[1]) {
+                
+                el.classList.add('selected');
+
+              }
+
+            });
+
+            return true;
+
+          }
+
+        }
+
+        if (!e.ctrlKey){
+
+          this.listFilesEl.querySelectorAll('li.selected').forEach(el => {
+
+            el.classList.remove('selected');
+
+          });
+        }
+
+        li.classList.toggle('selected');
+      });
+    }
+
+
   }
   
