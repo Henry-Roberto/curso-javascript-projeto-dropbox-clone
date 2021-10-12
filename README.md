@@ -18,7 +18,7 @@ bower install
 
 3° Passo
 No diretorio "curso-javascript-projeto-dropbox-clone\app", instale o node_modules com o seguinte comando:
- ```bash
+```bash
 npm install
 ```
 
