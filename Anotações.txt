@@ -1,8 +1,0 @@
-instalar bower 
-npm install -g bower
-bower install
-
-express --ejs 'nome da aplicação'
-npm install 
-
-npm install formidable --save //trata POST's com arquivos pesados
